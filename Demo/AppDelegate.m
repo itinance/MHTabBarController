@@ -22,7 +22,7 @@
 	MHTabBarController *tabBarController = [[MHTabBarController alloc] init];
 
 	tabBarController.delegate = self;
-	tabBarController.viewControllers = viewControllers;
+	tabBarController.subViewControllers = viewControllers;
 
 	// Uncomment this to select "Tab 2".
 	//tabBarController.selectedIndex = 1;

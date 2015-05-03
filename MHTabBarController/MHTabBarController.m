@@ -31,6 +31,15 @@ static const NSInteger TagOffset = 1000;
 	UIImageView *indicatorImageView;
 }
 
+/*
+ * this is needed when transforming from one viewcontroller to the next one on a UINavigationController.
+ * see also: http://stackoverflow.com/questions/16307482/custom-transitionfromviewcontroller-throws-error
+ */
+-(BOOL)shouldAutomaticallyForwardAppearanceMethods
+{
+    return YES;
+}
+
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
@@ -63,7 +72,7 @@ static const NSInteger TagOffset = 1000;
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	// Only rotate if all child view controllers agree on the new orientation.
-	for (UIViewController *viewController in self.viewControllers)
+	for (UIViewController *viewController in self.subViewControllers)
 	{
 		if (![viewController shouldAutorotateToInterfaceOrientation:interfaceOrientation])
 			return NO;
@@ -98,7 +107,7 @@ static const NSInteger TagOffset = 1000;
 - (void)addTabButtons
 {
 	NSUInteger index = 0;
-	for (UIViewController *viewController in self.viewControllers)
+	for (UIViewController *viewController in self.subViewControllers)
 	{
 		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
 		button.tag = TagOffset + index;
@@ -131,7 +140,7 @@ static const NSInteger TagOffset = 1000;
 - (void)layoutTabButtons
 {
 	NSUInteger index = 0;
-	NSUInteger count = [self.viewControllers count];
+	NSUInteger count = [self.subViewControllers count];
 
 	CGRect rect = CGRectMake(0.0f, 0.0f, floorf(self.view.bounds.size.width / count), self.tabBarHeight);
 
@@ -162,33 +171,33 @@ static const NSInteger TagOffset = 1000;
 	indicatorImageView.hidden = NO;
 }
 
-- (void)setViewControllers:(NSArray *)newViewControllers
+- (void)setSubViewControllers:(NSArray *)newViewControllers
 {
 	NSAssert([newViewControllers count] >= 2, @"MHTabBarController requires at least two view controllers");
 
 	UIViewController *oldSelectedViewController = self.selectedViewController;
 
 	// Remove the old child view controllers.
-	for (UIViewController *viewController in _viewControllers)
+	for (UIViewController *viewController in _subViewControllers)
 	{
 		[viewController willMoveToParentViewController:nil];
 		[viewController removeFromParentViewController];
 	}
 
-	_viewControllers = [newViewControllers copy];
+	_subViewControllers = [newViewControllers copy];
 
 	// This follows the same rules as UITabBarController for trying to
 	// re-select the previously selected view controller.
-	NSUInteger newIndex = [_viewControllers indexOfObject:oldSelectedViewController];
+	NSUInteger newIndex = [_subViewControllers indexOfObject:oldSelectedViewController];
 	if (newIndex != NSNotFound)
 		_selectedIndex = newIndex;
-	else if (newIndex < [_viewControllers count])
+	else if (newIndex < [_subViewControllers count])
 		_selectedIndex = newIndex;
 	else
 		_selectedIndex = 0;
 
 	// Add the new child view controllers.
-	for (UIViewController *viewController in _viewControllers)
+	for (UIViewController *viewController in _subViewControllers)
 	{
 		[self addChildViewController:viewController];
 		[viewController didMoveToParentViewController:self];
@@ -205,11 +214,11 @@ static const NSInteger TagOffset = 1000;
 
 - (void)setSelectedIndex:(NSUInteger)newSelectedIndex animated:(BOOL)animated
 {
-	NSAssert(newSelectedIndex < [self.viewControllers count], @"View controller index out of bounds");
+	NSAssert(newSelectedIndex < [self.subViewControllers count], @"View controller index out of bounds");
 
 	if ([self.delegate respondsToSelector:@selector(mh_tabBarController:shouldSelectViewController:atIndex:)])
 	{
-		UIViewController *toViewController = (self.viewControllers)[newSelectedIndex];
+		UIViewController *toViewController = (self.subViewControllers)[newSelectedIndex];
 		if (![self.delegate mh_tabBarController:self shouldSelectViewController:toViewController atIndex:newSelectedIndex])
 			return;
 	}
@@ -306,7 +315,7 @@ static const NSInteger TagOffset = 1000;
 - (UIViewController *)selectedViewController
 {
 	if (self.selectedIndex != NSNotFound)
-		return (self.viewControllers)[self.selectedIndex];
+		return (self.subViewControllers)[self.selectedIndex];
 	else
 		return nil;
 }
@@ -318,7 +327,7 @@ static const NSInteger TagOffset = 1000;
 
 - (void)setSelectedViewController:(UIViewController *)newSelectedViewController animated:(BOOL)animated
 {
-	NSUInteger index = [self.viewControllers indexOfObject:newSelectedViewController];
+	NSUInteger index = [self.subViewControllers indexOfObject:newSelectedViewController];
 	if (index != NSNotFound)
 		[self setSelectedIndex:index animated:animated];
 }

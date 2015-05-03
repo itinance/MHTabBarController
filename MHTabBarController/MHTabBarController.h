@@ -26,9 +26,9 @@
  * A custom tab bar container view controller. It works just like a regular
  * UITabBarController, except the tabs are at the top and look different.
  */
-@interface MHTabBarController : UIViewController
+@interface MHTabBarController : UINavigationController
 
-@property (nonatomic, copy) NSArray *viewControllers;
+@property (nonatomic, copy) NSArray *subViewControllers;
 @property (nonatomic, weak) UIViewController *selectedViewController;
 @property (nonatomic, assign) NSUInteger selectedIndex;
 @property (nonatomic, weak) id <MHTabBarControllerDelegate> delegate;

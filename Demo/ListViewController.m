@@ -97,7 +97,7 @@
 	listViewController2.title = @"Another Tab 2";
 
 	MHTabBarController *tabBarController = [[MHTabBarController alloc] init];
-	tabBarController.viewControllers = @[listViewController1, listViewController2];
+	tabBarController.subViewControllers = @[listViewController1, listViewController2];
 	tabBarController.title = @"Modal Screen";
 	tabBarController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] 
 		initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
