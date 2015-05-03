@@ -199,6 +199,10 @@ static const NSInteger TagOffset = 1000;
 	// Add the new child view controllers.
 	for (UIViewController *viewController in _subViewControllers)
 	{
+        
+        viewController.automaticallyAdjustsScrollViewInsets = NO;
+
+        
 		[self addChildViewController:viewController];
 		[viewController didMoveToParentViewController:self];
 	}
